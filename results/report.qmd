@@ -16,6 +16,11 @@ execute:
 
 Use this as a template. Keep the headers and remove all other text. In all, your report can be quite short. When it is complete, render and then push changes to your team repository.
 
+```{r}
+# load any other packages and read data here
+library(tidyverse)
+```
+
 ## Executive summary
 
 Write a one-paragraph abstract summarizing what you did and your findings. It need not be comprehensive; try to highlight the most important or interesting outcomes.
@@ -52,13 +57,13 @@ Insert code chunks using the *Insert* drop-down menu or `ctrl + alt + I` . By de
 
 ```{r}
 #| echo: true
-library(tidyverse)
-
 my_df <- tibble(animal = c('snake', 'gecko'),
                 threatening = c(TRUE, FALSE))
 
 my_df
 ```
+
+Code chunks will be executed in order when the document is rendered, so packages should be loaded at the very beginning of the document
 
 ### Rendering tables in markdown
 

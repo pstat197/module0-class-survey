@@ -1,8 +1,7 @@
 library(tidyverse)
-setwd("~/pstat197/pstat197a/materials/slides/data")
 
-background <- read_csv('background-clean.csv')
-interest <- read_csv('interest-clean.csv')
+background <- read_csv('data/background-clean.csv')
+interest <- read_csv('data/interest-clean.csv')
 
 ## individual variable summaries
 ###############################
