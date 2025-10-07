@@ -40,26 +40,27 @@ background %>%
 # but levels are ordered
 background %>%
   pull(math.prof) %>%
-  factor(levels = c('Beg', 'Int', 'Adv')) %>%
+  factor(levels = c('beg', 'int', 'adv')) %>%
   fct_count()
 
 # same summary, each variable
 background %>%
-  select(contains('.prof')) %>%
-  mutate_all(~factor(.x, levels = c('Beg', 'Int', 'Adv'))) %>%
-  summarize_all(fct_count)
+  select(contains(".prof")) %>%
+  mutate(across(everything(), ~ factor(.x, levels = c("beg", "int", "adv")))) %>%
+  reframe(across(everything(), ~ list(fct_count(.x)))) %>%
+  tidyr::unnest_longer(everything())
 
 # clean up names a little
 background %>%
   select(contains('.prof')) %>%
-  mutate_all(~factor(.x, levels = c('Beg', 'Int', 'Adv'))) %>%
+  mutate_all(~factor(.x, levels = c('beg', 'int', 'adv'))) %>%
   rename_with(~gsub('.prof', '', .x)) %>%
   summarize_all(fct_count)
 
-# what about converting to numeric? is this meaningful??
+# what about converting to numeric? is this meaningful?
 background %>%
   select(contains('.prof')) %>%
-  mutate_all(~factor(.x, levels = c('Beg', 'Int', 'Adv'))) %>%
+  mutate_all(~factor(.x, levels = c('beg', 'int', 'adv'))) %>%
   rename_with(~gsub('.prof', '', .x)) %>%
   mutate_all(as.numeric) %>%
   summarize_all(.funs = list(mean = mean, 
@@ -74,7 +75,7 @@ background %>%
 # unique combinations of proficiency ratings
 proficiency <- background %>%
   select(contains('.prof')) %>%
-  mutate_all(~factor(.x, levels = c('Beg', 'Int', 'Adv'))) %>%
+  mutate_all(~factor(.x, levels = c('beg', 'int', 'adv'))) %>%
   mutate_all(as.numeric)
 
 proficiency %>% 
@@ -114,15 +115,16 @@ bind_cols(proficiency, comfort) %>%
 
 # summary of classes taken
 classes <- background %>%
-  select(11:29) %>%
-  mutate_all(~factor(.x, levels = c('no', 'yes'))) %>%
-  mutate_all(~as.numeric(.x) - 1) %>%
-  summarize_all(mean) %>%
-  gather() %>%
-  arrange(desc(value)) 
+  select(11:28) %>%
+  mutate(across(everything(), ~ ifelse(.x == 1, "yes", "no"))) %>%
+  mutate(across(everything(), ~ factor(.x, levels = c("no", "yes")))) %>%
+  summarize(across(everything(), ~ mean(as.numeric(.x) - 1, na.rm = TRUE))) %>%
+  gather(class, proportion)
+
+classes
 
 classes %>%
-  ggplot(aes(x = value, y = reorder(key, value))) +
+  ggplot(aes(x = proportion, y = reorder(class, proportion))) +
   geom_point() +
   scale_x_sqrt() +
   labs(x = 'proportion of class', y = '')
